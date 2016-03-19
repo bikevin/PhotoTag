@@ -29,17 +29,22 @@
         android:text="@string/desc"
         android:fontFamily="roboto"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_below="@id/title"
         android:textColor="#ffffff"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:layout_marginTop="40dp"
         />
 
     <Button
         android:id="@+id/start"
         android:text="Start"
-        android:layout_width="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_width="100dp"
+        android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"
+        android:layout_below="@id/description"
         android:background="@drawable/start_button"
+        style="?android:attr/borderlessButtonStyle"
         />
 </RelativeLayout>

@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import com.firebase.client.Firebase;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -36,6 +37,12 @@ public class GameActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        Firebase.setAndroidContext(this);
+
+        Firebase myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
+
+        myFirebaseRef.child("Message").setValue("No More Favors");
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);

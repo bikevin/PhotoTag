@@ -52,6 +52,7 @@ public class GameActivity extends AppCompatActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+        getSupportActionBar().setTitle(" ");
     }
 
     @Override

@@ -7,10 +7,39 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="#0099CC"
     tools:context="com.kevin.phototag.MainActivity">
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="PhotoTag"
+        android:fontFamily="helvetica"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ffffff"
+        android:textSize="40dp"
+        android:layout_marginTop="40dp"
+        />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/desc"
+        android:fontFamily="roboto"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/title"
+        android:textColor="#ffffff"
+        android:textSize="20dp"
+        android:layout_marginTop="40dp"
+        />
+
+    <Button
+        android:id="@+id/start"
+        android:text="Start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/start_button"
+        />
 </RelativeLayout>

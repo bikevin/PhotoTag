@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PhotoTag</string>
+    <string name="desc">A photo challenge game: Take a photo that you think matches
+    the given tags and see how well your photo fits them! Compare with your friends.</string>
 </resources>

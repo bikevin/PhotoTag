@@ -70,11 +70,36 @@
 
         />
     <LinearLayout
+        android:layout_below="@id/words_found"
+        android:layout_marginTop="10dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/results"
-        android:orientation="vertical"
+        android:orientation="horizontal"
+        android:weightSum="1"
+
         >
+        <ListView
+            android:id="@+id/matched_words"
+            android:layout_weight=".5"
+            android:layout_width="0px"
+            android:background="#99e6ff"
+            android:layout_height="wrap_content"
+            android:orientation = "vertical"
+            android:drawSelectorOnTop="false"
+
+            >
+
+            </ListView>
+        <TextView
+            android:id="@+id/score"
+            android:text="Score: "
+            android:layout_weight=".5"
+            android:textSize="40sp"
+            android:background="#CCFFCC"
+            android:textColor="#003399"
+            android:layout_width="0px"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

@@ -61,7 +61,7 @@ public class GameFragment extends Fragment {
     public static long playerId;
     public static long numberOfPlayers;
     private boolean submitted;
-    private double score;
+    private double score = 0;
 
     private static final String TAG = GameFragment.class.getSimpleName();
     private static final int CODE_PICK = 1;
@@ -69,9 +69,9 @@ public class GameFragment extends Fragment {
     private ArrayList<String> tags1 = new ArrayList<String>();
     private ArrayList<String> tags2 = new ArrayList<String>();
     private Firebase myFirebaseRef;
-    private TextView wordsView;
+    private TextView wordsView, mScoreView;
 
-    private ListView mLeft, mRight;
+    private ListView mLeft, mRight, mWords;
     private Button mTags, mGenerate;
     private FloatingActionButton mFab;
 
@@ -137,6 +137,7 @@ public class GameFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_game2, container, false);
         mGenerate = (Button) rootView.findViewById(R.id.generate_tags);
         mFab = (FloatingActionButton) rootView.findViewById(R.id.picture_button);
+        mWords = (ListView) rootView.findViewById(R.id.matched_words);
         mFab.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -166,19 +167,26 @@ public class GameFragment extends Fragment {
         mRight = (ListView) rootView.findViewById(R.id.right_words);
         mTags = (Button) rootView.findViewById(R.id.generate_tags);
         wordsView = (TextView) rootView.findViewById(R.id.words_found);
-
+        mScoreView = (TextView) rootView.findViewById(R.id.score);
+        mScoreView.setText("Score: \n" + score);
         ArrayList<String> tags1 = new ArrayList<String>();
         ArrayList<String> tags2 = new ArrayList<String>();
+        ArrayList<String> prematch_tags= new ArrayList<String>();
         for(int i = 0; i<5; i++)
         {
             tags1.add(" ");
             tags2.add(" ");
+            prematch_tags.add(" ");
         }
+        prematch_tags.add(" ");
+        prematch_tags.add(" ");
         ListAdapter customAdapter1 = new ListAdapter(getContext(), R.layout.word_list, tags1);
         ListAdapter customAdapter2 = new ListAdapter(getContext(), R.layout.word_list, tags2);
+        ListAdapter customAdapter3 = new ListAdapter(getContext(), R.layout.word_list, prematch_tags);
 
         mLeft.setAdapter(customAdapter1);
         mRight.setAdapter(customAdapter2);
+        mWords.setAdapter(customAdapter3);
 
         return rootView;
     }
@@ -359,13 +367,20 @@ public class GameFragment extends Fragment {
             if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
 
                 score = compareTags((ArrayList<Tag>)result.getTags(), targetList);
+                mScoreView.setText("Score: \n" + score);
 
                 ArrayList<String> similarTags = correctTags((ArrayList<Tag>) result.getTags(), targetList);
+                for(int i = similarTags.size(); i<7; i++)
+                {
+                    similarTags.add(" ");
+                }
                 StringBuilder b = new StringBuilder();
                 for(String s : similarTags){
                     b.append(s).append("\n");
                 }
-                wordsView.setText(b.append(" ").append(score));
+                ListAdapter customAdapter1 = new ListAdapter(getContext(), R.layout.word_list, similarTags);
+
+                mWords.setAdapter(customAdapter1);
 
                 submitted = true;
 

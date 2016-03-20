@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +20,13 @@ import android.support.v4.widget.DrawerLayout;
 import com.firebase.client.Firebase;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
@@ -34,6 +42,34 @@ public class GameActivity extends AppCompatActivity
      */
     private CharSequence mTitle;
 
+    public ArrayList<String> pointInputFromSeperatedValueFile(String filepath){
+
+        //initialize variables
+        String line;
+        //use array list to support unspecified number of points
+        ArrayList<String> pointList = new ArrayList<>();
+
+        try {
+
+            //read file
+            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open(filepath)));
+
+            while((line =  br.readLine()) != null){
+
+                //split by separator
+
+                pointList.add(line.toLowerCase());
+
+            }
+        } catch(FileNotFoundException e){
+
+            e.printStackTrace();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+
+        return pointList;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +81,16 @@ public class GameActivity extends AppCompatActivity
         Firebase myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
 
         myFirebaseRef.child("Message").setValue("No More Favors");
+
+        ArrayList<String> inputs = pointInputFromSeperatedValueFile("words.txt");
+
+
+        for(int i = 0; i < inputs.size(); i++)
+        {
+            myFirebaseRef.child("Tags").child(String.valueOf(i)).setValue(inputs.get(i));
+            Log.d(inputs.get(i),inputs.get(i));
+        }
+
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);

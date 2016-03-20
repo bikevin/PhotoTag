@@ -145,6 +145,7 @@ public class GameFragment extends Fragment {
         if (result != null) {
             if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
                 //get probabilities
+                /*
                 JsonObject fullResponse = result.getJsonResponse();
 
                 JsonArray probabilities = fullResponse.getAsJsonObject("results")
@@ -159,11 +160,11 @@ public class GameFragment extends Fragment {
                 }
 
                 LinkedHashMap<String, String> tagAndProb = new LinkedHashMap<>();
-
+                */
                 // Display the list of tags in the UI.
                 StringBuilder b = new StringBuilder();
                 for (Tag tag : result.getTags()) {
-                    b.append(b.length() > 0 ? ", " : "").append(tag.getName()).append("\n");
+                    b.append(b.length() > 0 ? ", " : "").append(tag.getName()).append(" ").append((tag.getProbability()*100)).append("\n");
                 }
                 textView.setText("Tags:\n" + b);
 
@@ -183,6 +184,7 @@ public class GameFragment extends Fragment {
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
+
         }
     }
 

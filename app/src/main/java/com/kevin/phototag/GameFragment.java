@@ -69,14 +69,13 @@ public class GameFragment extends Fragment {
     private ArrayList<String> tags1 = new ArrayList<String>();
     private ArrayList<String> tags2 = new ArrayList<String>();
     private Firebase myFirebaseRef;
+    private TextView wordsView;
 
     private ListView mLeft, mRight;
     private Button mTags, mGenerate;
     private FloatingActionButton mFab;
 
     static final int REQUEST_IMAGE_CAPTURE = 2;
-    private Camera mCamera;
-    private int cameraId = 0;
     private static boolean haveIdoneshit = false;
 
     private OnFragmentInteractionListener mListener;
@@ -166,6 +165,7 @@ public class GameFragment extends Fragment {
         mLeft = (ListView) rootView.findViewById(R.id.left_words);
         mRight = (ListView) rootView.findViewById(R.id.right_words);
         mTags = (Button) rootView.findViewById(R.id.generate_tags);
+        wordsView = (TextView) rootView.findViewById(R.id.words_found);
 
         ArrayList<String> tags1 = new ArrayList<String>();
         ArrayList<String> tags2 = new ArrayList<String>();
@@ -208,20 +208,15 @@ public class GameFragment extends Fragment {
                 mLeft.setAdapter(customAdapter1);
                 mRight.setAdapter(customAdapter2);
 
-                for(int i = 0; i < tags1.size(); i++){
+                for (int i = 0; i < tags1.size(); i++) {
                     targetList.add(tags1.get(i));
                 }
-                for(int i = 0; i < tags2.size(); i++){
+                for (int i = 0; i < tags2.size(); i++) {
                     targetList.add(tags2.get(i));
                 }
-                for(int i = 0; i < 10; i++)
-                {
+                for (int i = 0; i < 10; i++) {
                     myFirebaseRef.child("Target").child(String.valueOf(i)).setValue(targetList.get(i));
                 }
-
-
-
-
 
 
             }
@@ -363,38 +358,21 @@ public class GameFragment extends Fragment {
         if (result != null) {
             if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
 
-
-                //get probabilities
                 score = compareTags((ArrayList<Tag>)result.getTags(), targetList);
+
+                ArrayList<String> similarTags = correctTags((ArrayList<Tag>) result.getTags(), targetList);
+                StringBuilder b = new StringBuilder();
+                for(String s : similarTags){
+                    b.append(s).append("\n");
+                }
+                wordsView.setText(b.append(" ").append(score));
 
                 submitted = true;
 
-
-
-                /*
-                JsonObject fullResponse = result.getJsonResponse();
-
-                JsonArray probabilities = fullResponse.getAsJsonObject("results")
-                        .getAsJsonObject("tag").getAsJsonArray("probs");
-
-                Iterator<JsonElement> probIterator = probabilities.iterator();
-
-                ArrayList<String> probNumber = new ArrayList<>();
-
-                while(probIterator.hasNext()){
-                    probNumber.add(probIterator.next().getAsString());
-                }
-
-                LinkedHashMap<String, String> tagAndProb = new LinkedHashMap<>();
-                */
                 // Display the list of tags in the UI.
-                StringBuilder b = new StringBuilder();
                 for (Tag tag : result.getTags()) {
                     b.append(b.length() > 0 ? ", " : "").append(tag.getName()).append(" ").append((tag.getProbability()*100)).append("\n");
                 }
-
-
-
 
             } else {
                 Log.e(TAG, "Clarifai: " + result.getStatusMessage());

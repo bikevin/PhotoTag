@@ -26,7 +26,10 @@ import com.clarifai.api.RecognitionRequest;
 import com.clarifai.api.RecognitionResult;
 import com.clarifai.api.Tag;
 import com.clarifai.api.exception.ClarifaiException;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -39,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Random;
 
 
 /**
@@ -53,11 +57,12 @@ public class GameFragment extends Fragment {
     private static final String TAG = GameFragment.class.getSimpleName();
     private static final int CODE_PICK = 1;
 
-    private ImageView imageView;
-    private TextView textView;
-    private Button selectButton;
+    private ArrayList<String> tags1 = new ArrayList<String>();
+    private ArrayList<String> tags2 = new ArrayList<String>();
+    private Firebase myFirebaseRef;
+
     private ListView mLeft, mRight;
-    private Button mTags;
+    private Button mTags, mGenerate;
     private FloatingActionButton mFab;
 
     static final int REQUEST_IMAGE_CAPTURE = 2;
@@ -85,9 +90,10 @@ public class GameFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Firebase.setAndroidContext(getContext());
 
-        Firebase myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
+        Firebase.setAndroidContext(getContext());
+        myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
+
 
         myFirebaseRef.child("Message").setValue("No More Favors");
     }
@@ -98,17 +104,8 @@ public class GameFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View rootView = inflater.inflate(R.layout.fragment_game2, container, false);
-        imageView = (ImageView) rootView.findViewById(R.id.imageView);
-        textView = (TextView) rootView.findViewById(R.id.textView);
-        selectButton = (Button) rootView.findViewById(R.id.selectButton);
+        mGenerate = (Button) rootView.findViewById(R.id.generate_tags);
         mFab = (FloatingActionButton) rootView.findViewById(R.id.picture_button);
-        selectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, CODE_PICK);
-            }
-        });
         mFab.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -120,8 +117,15 @@ public class GameFragment extends Fragment {
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 }
             }
+        });
+        mGenerate.setOnClickListener(new View.OnClickListener() {
 
+            @Override
 
+            public void onClick(View v) {
+                generateWords();
+
+            }
         });
         mLeft = (ListView) rootView.findViewById(R.id.left_words);
         mRight = (ListView) rootView.findViewById(R.id.right_words);
@@ -131,8 +135,8 @@ public class GameFragment extends Fragment {
         ArrayList<String> tags2 = new ArrayList<String>();
         for(int i = 0; i<5; i++)
         {
-            tags1.add("hello");
-            tags2.add("hello");
+            tags1.add(" ");
+            tags2.add(" ");
         }
         ListAdapter customAdapter1 = new ListAdapter(getContext(), R.layout.word_list, tags1);
         ListAdapter customAdapter2 = new ListAdapter(getContext(), R.layout.word_list, tags2);
@@ -145,15 +149,46 @@ public class GameFragment extends Fragment {
         return rootView;
     }
 
+    public void generateWords()
+    {
+
+        tags1.clear();
+        tags2.clear();
+        myFirebaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                DataSnapshot tags = snapshot.child("Tags");
+                for (int i = 0; i < 5; i++)
+                {
+
+                    Random rand = new Random();
+                    int val = rand.nextInt((int) tags.getChildrenCount());
+                    tags1.add((String)(tags.child(String.valueOf(val)).getValue()));
+                    val = rand.nextInt((int) tags.getChildrenCount());
+                    tags2.add((String)(tags.child(String.valueOf(val)).getValue()));
+                }
+                ListAdapter customAdapter1 = new ListAdapter(getContext(), R.layout.word_list, tags1);
+                ListAdapter customAdapter2 = new ListAdapter(getContext(), R.layout.word_list, tags2);
+
+                mLeft.setAdapter(customAdapter1);
+                mRight.setAdapter(customAdapter2);
+
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+    }
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
         if(requestCode == CODE_PICK && resultCode == Activity.RESULT_OK) {
             Log.d(TAG, "User picked image" + intent.getData());
             Bitmap bitmap = loadBitmapFromUri(intent.getData());
-            Picasso.with(this.getActivity()).load(intent.getData()).into(imageView);
-            imageView.setVisibility(View.VISIBLE);
             new AsyncTask<Bitmap, Void, RecognitionResult>() {
                 @Override
                 protected RecognitionResult doInBackground(Bitmap... bitmaps) {
@@ -171,8 +206,6 @@ public class GameFragment extends Fragment {
             Log.e("xxzcd","niggggas fuccckeed up");
             Bundle extras = intent.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
-            imageView.setVisibility(View.VISIBLE);
-            Picasso.with(this.getActivity()).load(intent.getData()).into(imageView);
             new AsyncTask<Bitmap, Void, RecognitionResult>() {
                 @Override
                 protected RecognitionResult doInBackground(Bitmap... bitmaps) {
@@ -277,18 +310,18 @@ public class GameFragment extends Fragment {
                 for (Tag tag : result.getTags()) {
                     b.append(b.length() > 0 ? ", " : "").append(tag.getName()).append(" ").append((tag.getProbability()*100)).append("\n");
                 }
-                textView.setText("Tags:\n" + b);
+
 
 
 
             } else {
                 Log.e(TAG, "Clarifai: " + result.getStatusMessage());
-                textView.setText("Sorry, there was an error recognizing your image.");
+
             }
         } else {
-            textView.setText("Sorry, there was an error recognizing your image.");
+
         }
-        selectButton.setEnabled(true);
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -306,10 +339,6 @@ public class GameFragment extends Fragment {
             opts.inJustDecodeBounds = true;
             BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uri), null, opts);
             int sampleSize = 1;
-            while (opts.outWidth / (2 * sampleSize) >= imageView.getWidth() &&
-                    opts.outHeight / (2 * sampleSize) >= imageView.getHeight()) {
-                sampleSize *= 2;
-            }
 
             opts = new BitmapFactory.Options();
             opts.inSampleSize = sampleSize;

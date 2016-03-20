@@ -87,27 +87,6 @@
         android:src="@drawable/camera"
 
         />
-    <ImageView
-        android:layout_below="@id/results"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:id="@+id/imageView"
-        android:visibility="invisible"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:visibility="visible"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/selectButton"
-        android:text="fine jerry is this better"
-        android:inputType="text"
-        android:visibility="invisible"/>
 
 
 

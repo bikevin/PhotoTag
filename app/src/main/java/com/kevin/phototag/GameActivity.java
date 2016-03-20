@@ -19,7 +19,11 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import com.firebase.client.Firebase;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -44,58 +48,19 @@ public class GameActivity extends AppCompatActivity
 
     public ArrayList<String> pointInputFromSeperatedValueFile(String filepath){
 
-        //initialize variables
-        String line;
-        //use array list to support unspecified number of points
-        ArrayList<String> pointList = new ArrayList<>();
-
-        try {
-
-            //read file
-            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open(filepath)));
-
-            while((line =  br.readLine()) != null){
-
-                //split by separator
-
-                pointList.add(line.toLowerCase());
-
-            }
-        } catch(FileNotFoundException e){
-
-            e.printStackTrace();
-        } catch(IOException e){
-            e.printStackTrace();
-        }
-
-        return pointList;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
+            
         Firebase.setAndroidContext(this);
 
         Firebase myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
 
         myFirebaseRef.child("Message").setValue("No More Favors");
 
-        ArrayList<String> inputs = pointInputFromSeperatedValueFile("words.txt");
-
-
-        for(int i = 0; i < inputs.size(); i++)
-        {
-            myFirebaseRef.child("Tags").child(String.valueOf(i)).setValue(inputs.get(i));
-            Log.d(inputs.get(i),inputs.get(i));
-        }
-
-
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,

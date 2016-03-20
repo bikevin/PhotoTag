@@ -22,4 +22,10 @@
         android:layout_gravity="start" android:name="com.kevin.phototag.NavigationDrawerFragment"
         tools:layout="@layout/fragment_navigation_drawer" />
 
+    <fragment android:id="@+id/game_contents"
+        android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
+        android:layout_gravity="start" android:name="com.kevin.phototag.GameFragment"
+        tools:layout="@layout/fragment_game2" />
+
+
 </android.support.v4.widget.DrawerLayout>

@@ -156,6 +156,8 @@ public class GameFragment extends Fragment {
 
             public void onClick(View v) {
                 generateWords();
+                mGenerate.setEnabled(false);
+                mGenerate.setText("Tags Generated");
 
 
 
@@ -252,9 +254,11 @@ public class GameFragment extends Fragment {
         }
         else if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK)
         {
-            Log.e("xxzcd","niggggas fuccckeed up");
+            mGenerate.setEnabled(true);
+            mGenerate.setText("Generate Tags");
             Bundle extras = intent.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
+
             new AsyncTask<Bitmap, Void, RecognitionResult>() {
                 @Override
                 protected RecognitionResult doInBackground(Bitmap... bitmaps) {

@@ -63,6 +63,8 @@
         android:layout_below="@id/word_tags"
         android:layout_marginTop="10dp"
         android:text="Words found: "
+        android:textColor="#003399"
+        android:layout_centerHorizontal="true"
         android:fontFamily="open sans"
         android:textSize="30sp"
 

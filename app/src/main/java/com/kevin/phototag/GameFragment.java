@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,6 +57,11 @@ public class GameFragment extends Fragment {
     private Button selectButton;
     private ListView mLeft, mRight;
     private Button mTags;
+    private FloatingActionButton mFab;
+
+    static final int REQUEST_IMAGE_CAPTURE = 2;
+    private Camera mCamera;
+    private int cameraId = 0;
 
     private OnFragmentInteractionListener mListener;
 
@@ -93,13 +100,27 @@ public class GameFragment extends Fragment {
         imageView = (ImageView) rootView.findViewById(R.id.imageView);
         textView = (TextView) rootView.findViewById(R.id.textView);
         selectButton = (Button) rootView.findViewById(R.id.selectButton);
-
+        mFab = (FloatingActionButton) rootView.findViewById(R.id.picture_button);
         selectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, CODE_PICK);
             }
+        });
+        mFab.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+
+            public void onClick(View v) {
+                //starts an Intent to take a photo
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                }
+            }
+
+
         });
         mLeft = (ListView) rootView.findViewById(R.id.left_words);
         mRight = (ListView) rootView.findViewById(R.id.right_words);
@@ -131,6 +152,7 @@ public class GameFragment extends Fragment {
             Log.d(TAG, "User picked image" + intent.getData());
             Bitmap bitmap = loadBitmapFromUri(intent.getData());
             Picasso.with(this.getActivity()).load(intent.getData()).into(imageView);
+            imageView.setVisibility(View.VISIBLE);
             new AsyncTask<Bitmap, Void, RecognitionResult>() {
                 @Override
                 protected RecognitionResult doInBackground(Bitmap... bitmaps) {
@@ -142,6 +164,26 @@ public class GameFragment extends Fragment {
                     updateUIForResult(result);
                 }
             }.execute(bitmap);
+        }
+        else if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK)
+        {
+            Log.e("xxzcd","niggggas fuccckeed up");
+            Bundle extras = intent.getExtras();
+            Bitmap bitmap = (Bitmap) extras.get("data");
+            imageView.setVisibility(View.VISIBLE);
+            Picasso.with(this.getActivity()).load(intent.getData()).into(imageView);
+            new AsyncTask<Bitmap, Void, RecognitionResult>() {
+                @Override
+                protected RecognitionResult doInBackground(Bitmap... bitmaps) {
+                    return recognizeBitmap(bitmaps[0]);
+                }
+
+                @Override
+                protected void onPostExecute(RecognitionResult result) {
+                    updateUIForResult(result);
+                }
+            }.execute(bitmap);
+
         }
     }
 
@@ -213,7 +255,6 @@ public class GameFragment extends Fragment {
 
         }
     }
-
     private Bitmap loadBitmapFromUri(Uri uri){
         try {
             // The image may be large. Load an image that is sized for display. This follows best

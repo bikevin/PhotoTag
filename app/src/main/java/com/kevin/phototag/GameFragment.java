@@ -90,6 +90,16 @@ public class GameFragment extends Fragment {
         Firebase myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
 
         myFirebaseRef.child("Message").setValue("No More Favors");
+
+        ArrayList<Player> playerArrayList = new ArrayList<>(3);
+        playerArrayList.add(new Player(1));
+        playerArrayList.add(new Player(2));
+        playerArrayList.add(new Player(3));
+
+        for(int i = 0; i < playerArrayList.size(); i++) {
+            myFirebaseRef.child("Players").child(String.valueOf(playerArrayList.get(i).getId())).child("Submitted").setValue(String.valueOf(playerArrayList.get(i).getSubmitted()));
+            myFirebaseRef.child("Players").child(String.valueOf(playerArrayList.get(i).getId())).child("Score").setValue(playerArrayList.get(i).getScore());
+        }
     }
 
     @Override

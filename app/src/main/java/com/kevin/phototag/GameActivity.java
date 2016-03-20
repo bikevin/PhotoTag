@@ -71,7 +71,6 @@ public class GameActivity extends AppCompatActivity
         } catch(IOException e){
             e.printStackTrace();
         }
-
         return pointList;
     }
 
@@ -85,6 +84,7 @@ public class GameActivity extends AppCompatActivity
         Firebase myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
 
         myFirebaseRef.child("Message").setValue("No More Favors");
+
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);

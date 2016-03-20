@@ -37,6 +37,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Random;
+
 
 
 /**
@@ -55,6 +57,12 @@ import java.util.Random;
  * create an instance of this fragment.
  */
 public class GameFragment extends Fragment {
+    private ArrayList<String> targetList = new ArrayList<>();
+    public static long playerId;
+    public static long numberOfPlayers;
+    private boolean submitted;
+    private double score;
+
     private static final String TAG = GameFragment.class.getSimpleName();
     private static final int CODE_PICK = 1;
 
@@ -69,6 +77,7 @@ public class GameFragment extends Fragment {
     static final int REQUEST_IMAGE_CAPTURE = 2;
     private Camera mCamera;
     private int cameraId = 0;
+    private static boolean haveIdoneshit = false;
 
     private OnFragmentInteractionListener mListener;
 
@@ -92,21 +101,33 @@ public class GameFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         Firebase.setAndroidContext(getContext());
         myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
 
 
         myFirebaseRef.child("Message").setValue("No More Favors");
 
-        ArrayList<Player> playerArrayList = new ArrayList<>(3);
-        playerArrayList.add(new Player(1));
-        playerArrayList.add(new Player(2));
-        playerArrayList.add(new Player(3));
 
-        for(int i = 0; i < playerArrayList.size(); i++) {
-            myFirebaseRef.child("Players").child(String.valueOf(playerArrayList.get(i).getId())).child("Submitted").setValue(String.valueOf(playerArrayList.get(i).getSubmitted()));
-            myFirebaseRef.child("Players").child(String.valueOf(playerArrayList.get(i).getId())).child("Score").setValue(playerArrayList.get(i).getScore());
-        }
+
+
+        final Firebase ref = myFirebaseRef.child("Number Of Players");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                numberOfPlayers = (long) snapshot.getValue() + 1;
+                System.out.println("DataSnapshot " + ((long) snapshot.getValue() + 1));
+                ref.setValue(numberOfPlayers);
+                playerId = numberOfPlayers;
+                myFirebaseRef.child("Players").child(String.valueOf(playerId)).child("Submitted").setValue(String.valueOf(submitted));
+                myFirebaseRef.child("Players").child(String.valueOf(playerId)).child("Score").setValue(String.valueOf(score));
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
     }
 
     @Override
@@ -136,6 +157,8 @@ public class GameFragment extends Fragment {
             public void onClick(View v) {
                 generateWords();
 
+
+
             }
         });
         mLeft = (ListView) rootView.findViewById(R.id.left_words);
@@ -155,34 +178,48 @@ public class GameFragment extends Fragment {
         mLeft.setAdapter(customAdapter1);
         mRight.setAdapter(customAdapter2);
 
-
-
         return rootView;
     }
 
     public void generateWords()
     {
 
+        myFirebaseRef.child("Target").removeValue();
         tags1.clear();
         tags2.clear();
-        myFirebaseRef.addValueEventListener(new ValueEventListener() {
+        targetList.clear();
+        myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 DataSnapshot tags = snapshot.child("Tags");
-                for (int i = 0; i < 5; i++)
-                {
+                for (int i = 0; i < 5; i++) {
 
                     Random rand = new Random();
                     int val = rand.nextInt((int) tags.getChildrenCount());
-                    tags1.add((String)(tags.child(String.valueOf(val)).getValue()));
+                    tags1.add((String) (tags.child(String.valueOf(val)).getValue()));
                     val = rand.nextInt((int) tags.getChildrenCount());
-                    tags2.add((String)(tags.child(String.valueOf(val)).getValue()));
+                    tags2.add((String) (tags.child(String.valueOf(val)).getValue()));
                 }
                 ListAdapter customAdapter1 = new ListAdapter(getContext(), R.layout.word_list, tags1);
                 ListAdapter customAdapter2 = new ListAdapter(getContext(), R.layout.word_list, tags2);
 
                 mLeft.setAdapter(customAdapter1);
                 mRight.setAdapter(customAdapter2);
+
+                for(int i = 0; i < tags1.size(); i++){
+                    targetList.add(tags1.get(i));
+                }
+                for(int i = 0; i < tags2.size(); i++){
+                    targetList.add(tags2.get(i));
+                }
+                for(int i = 0; i < 10; i++)
+                {
+                    myFirebaseRef.child("Target").child(String.valueOf(i)).setValue(targetList.get(i));
+                }
+
+
+
+
 
 
             }
@@ -192,11 +229,12 @@ public class GameFragment extends Fragment {
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
+
+
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-
         if(requestCode == CODE_PICK && resultCode == Activity.RESULT_OK) {
             Log.d(TAG, "User picked image" + intent.getData());
             Bitmap bitmap = loadBitmapFromUri(intent.getData());
@@ -317,9 +355,18 @@ public class GameFragment extends Fragment {
 
     /** Updates the UI by displaying tags for the given result. */
     private void updateUIForResult(RecognitionResult result) {
+
         if (result != null) {
             if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
+
+
                 //get probabilities
+                score = compareTags((ArrayList<Tag>)result.getTags(), targetList);
+
+                submitted = true;
+
+
+
                 /*
                 JsonObject fullResponse = result.getJsonResponse();
 

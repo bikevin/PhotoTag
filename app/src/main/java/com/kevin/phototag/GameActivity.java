@@ -17,7 +17,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -34,7 +42,7 @@ import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
-        GameFragment.OnFragmentInteractionListener{
+        GameFragment.OnFragmentInteractionListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -46,7 +54,14 @@ public class GameActivity extends AppCompatActivity
      */
     private CharSequence mTitle;
 
-    public ArrayList<String> pointInputFromSeperatedValueFile(String filepath){
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
+    public ArrayList<String> pointInputFromSeperatedValueFile(String filepath) {
 
         //initialize variables
         String line;
@@ -58,17 +73,17 @@ public class GameActivity extends AppCompatActivity
             //read file
             BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open(filepath)));
 
-            while((line =  br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
 
                 //split by separator
 
                 pointList.add(line.toLowerCase());
 
             }
-        } catch(FileNotFoundException e){
+        } catch (FileNotFoundException e) {
 
             e.printStackTrace();
-        } catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return pointList;
@@ -78,13 +93,12 @@ public class GameActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-            
+
         Firebase.setAndroidContext(this);
 
-        Firebase myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
+        final Firebase myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
 
         myFirebaseRef.child("Message").setValue("No More Favors");
-
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -93,6 +107,9 @@ public class GameActivity extends AppCompatActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
         getSupportActionBar().setTitle(" ");
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -155,10 +172,49 @@ public class GameActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri){
+    public void onFragmentInteraction(Uri uri) {
         //required interface method
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Game Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.kevin.phototag/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Game Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.kevin.phototag/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+    }
 }
 
 

@@ -38,7 +38,10 @@ public class ListAdapter extends ArrayAdapter<String> {
             LayoutInflater vi;
             vi = LayoutInflater.from(getContext());
             v = vi.inflate(R.layout.word_list, null);
+
         }
+        if(!getItem(position).equals("hello"))
+            v.setVisibility(View.VISIBLE);
 
         String p = getItem(position);
 

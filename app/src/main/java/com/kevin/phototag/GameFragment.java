@@ -211,6 +211,25 @@ public class GameFragment extends Fragment {
         }
     }
 
+    private ArrayList<String> correctTags(ArrayList<Tag> userTags, ArrayList<String> serverTags){
+        ArrayList<String> identical = new ArrayList<>();
+        for(String s : serverTags){
+            for(Tag t : userTags){
+                if(t.getName().equals(s)){
+                    identical.add(s);
+                }
+            }
+        }
+
+        return identical;
+    }
+
+    private Player setScoreAndSubmitted(Player player, boolean submitted, int score){
+        player.scoreChange(score);
+        player.submittedChange(submitted);
+        return player;
+    }
+
     /** Sends the given bitmap to Clarifai for recognition and returns the result. */
     private RecognitionResult recognizeBitmap(Bitmap bitmap) {
         try {

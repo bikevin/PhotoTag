@@ -1,26 +1,112 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.kevin.phototag.GameFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.kevin.phototag.GameFragment"
+    android:paddingTop="16dp"
+    android:background="#0099CC">
 
     <!-- TODO: Update blank fragment layout -->
+    <Button
+        android:id="@+id/generate_tags"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:fontFamily="open sans"
+        android:text="@string/generate_name"
+        android:textAllCaps="false"
+        android:background="@drawable/generate_button"
+        style="?android:attr/borderlessButtonStyle"
+        />
+    <LinearLayout
+        android:id="@+id/word_tags"
+        android:layout_marginTop="10dp"
+        android:layout_width="fill_parent"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/generate_tags"
+        android:background="#99e6ff"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        >
+        <ListView
+            android:id="@+id/left_words"
+            android:layout_width="0px"
+            android:layout_weight=".5"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:drawSelectorOnTop="false">
+        </ListView>
+
+        <ListView
+            android:id="@+id/right_words"
+            android:orientation="vertical"
+            android:layout_width="0px"
+            android:layout_weight=".5"
+            android:layout_height="wrap_content"
+            android:drawSelectorOnTop="false"
+            >
+        </ListView>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/words_found"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/word_tags"
+        android:layout_marginTop="10dp"
+        android:text="Words found: "
+        android:fontFamily="open sans"
+        android:textSize="30sp"
+
+        />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/results"
+        android:orientation="vertical"
+        >
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="440dp"
+        android:layout_marginStart="270dp"
+        android:clickable="true"
+        android:src="@drawable/camera"
+
+        />
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/imageView"
+        android:visibility="invisible"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView"/>
+        android:id="@+id/textView"
+        android:visibility="invisible"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/selectButton"
         android:text="fine jerry is this better"
-        android:inputType="text"/>
+        android:inputType="text"
+        android:visibility="invisible"/>
 
-</FrameLayout>
+
+
+</RelativeLayout>

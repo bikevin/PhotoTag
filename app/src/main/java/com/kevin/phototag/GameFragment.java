@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.clarifai.api.ClarifaiClient;
@@ -23,6 +24,7 @@ import com.clarifai.api.RecognitionRequest;
 import com.clarifai.api.RecognitionResult;
 import com.clarifai.api.Tag;
 import com.clarifai.api.exception.ClarifaiException;
+import com.firebase.client.Firebase;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -51,7 +53,8 @@ public class GameFragment extends Fragment {
     private ImageView imageView;
     private TextView textView;
     private Button selectButton;
-
+    private ListView mLeft, mRight;
+    private Button mTags;
 
     private OnFragmentInteractionListener mListener;
 
@@ -74,6 +77,11 @@ public class GameFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(getContext());
+
+        Firebase myFirebaseRef = new Firebase("https://imagesearch.firebaseio.com/");
+
+        myFirebaseRef.child("Message").setValue("No More Favors");
     }
 
     @Override
@@ -93,6 +101,24 @@ public class GameFragment extends Fragment {
                 startActivityForResult(intent, CODE_PICK);
             }
         });
+        mLeft = (ListView) rootView.findViewById(R.id.left_words);
+        mRight = (ListView) rootView.findViewById(R.id.right_words);
+        mTags = (Button) rootView.findViewById(R.id.generate_tags);
+
+        ArrayList<String> tags1 = new ArrayList<String>();
+        ArrayList<String> tags2 = new ArrayList<String>();
+        for(int i = 0; i<5; i++)
+        {
+            tags1.add("hello");
+            tags2.add("hello");
+        }
+        ListAdapter customAdapter1 = new ListAdapter(getContext(), R.layout.word_list, tags1);
+        ListAdapter customAdapter2 = new ListAdapter(getContext(), R.layout.word_list, tags2);
+
+        mLeft.setAdapter(customAdapter1);
+        mRight.setAdapter(customAdapter2);
+
+
 
         return rootView;
     }

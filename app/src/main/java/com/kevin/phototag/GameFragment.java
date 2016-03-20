@@ -188,12 +188,12 @@ public class GameFragment extends Fragment {
         }
     }
 
-    private double compareTags(HashMap<String, Double> userTags, ArrayList<Tag> serverTags){
+    private double compareTags(ArrayList<Tag> userTags, ArrayList<String> serverTags){
         double score = 0;
-        for(Tag t : serverTags){
-            for(String s : userTags.keySet()){
+        for(String s : serverTags){
+            for(Tag t : userTags){
                 if(t.getName().equals(s)){
-                    score += weightedScore(userTags.get(s)) * 1000;
+                    score += weightedScore(t.getProbability()) * 1000;
                 }
             }
         }

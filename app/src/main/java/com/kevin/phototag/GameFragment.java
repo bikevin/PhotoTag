@@ -34,6 +34,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -228,6 +229,26 @@ public class GameFragment extends Fragment {
         player.scoreChange(score);
         player.submittedChange(submitted);
         return player;
+    }
+
+    private ArrayList<Player> sortByScore(ArrayList<Player> inputList){
+        int index;
+        int score;
+        ArrayList<Player> sorted = new ArrayList<>();
+        while(inputList.size() > 0){
+            index = 0;
+            score = 0;
+            for(int i = 0; i < inputList.size(); i++){
+                if(inputList.get(i).getScore() > score){
+                    score = inputList.get(i).getScore();
+                    index = i;
+                }
+            }
+            sorted.add(inputList.get(index));
+            inputList.remove(index);
+        }
+
+        return sorted;
     }
 
     /** Sends the given bitmap to Clarifai for recognition and returns the result. */

@@ -36,6 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -184,6 +185,29 @@ public class GameFragment extends Fragment {
                 }
             }.execute(bitmap);
 
+        }
+    }
+
+    private double compareTags(HashMap<String, Double> userTags, ArrayList<Tag> serverTags){
+        double score = 0;
+        for(Tag t : serverTags){
+            for(String s : userTags.keySet()){
+                if(t.getName().equals(s)){
+                    score += weightedScore(userTags.get(s)) * 1000;
+                }
+            }
+        }
+
+        return score;
+    }
+
+    private int weightedScore(double score){
+        if(score > 0.95){
+            return 2;
+        } else if (score > 0.9){
+            return 1;
+        } else {
+            return 0;
         }
     }
 

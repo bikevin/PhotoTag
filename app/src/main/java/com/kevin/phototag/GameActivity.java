@@ -48,6 +48,33 @@ public class GameActivity extends AppCompatActivity
 
     public ArrayList<String> pointInputFromSeperatedValueFile(String filepath){
 
+        //initialize variables
+        String line;
+        //use array list to support unspecified number of points
+        ArrayList<String> pointList = new ArrayList<>();
+
+        try {
+
+            //read file
+            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open(filepath)));
+
+            while((line =  br.readLine()) != null){
+
+                //split by separator
+
+                pointList.add(line.toLowerCase());
+
+            }
+        } catch(FileNotFoundException e){
+
+            e.printStackTrace();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+
+        return pointList;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,4 +159,32 @@ public class GameActivity extends AppCompatActivity
         //required interface method
     }
 
+}
+
+
+class Player {
+    private int id;
+    private boolean submitted;
+    private int score;
+    public Player (int id_in) {
+        id = id_in;
+        submitted = false;
+        score = 0;
+    }
+    public int getId(){
+        return id;
+    }
+    public boolean getSubmitted(){
+        return submitted;
+    }
+    public int getScore(){
+        return score;
+    }
+    public void submittedChange(boolean submitted_in){
+        submitted = submitted_in;
+    }
+
+    public void scoreChange(int score_in){
+        score = score_in;
+    }
 }
